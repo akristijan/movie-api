@@ -52,6 +52,10 @@ app.get('/search', async (req, res) => {
 app.get('/get/:id', async (req, res) => {
     try {
         
+        let result = await collection.findOne({
+            "_id" : ObjectId(req.params.id)
+        })
+        res.send(result)
     } catch (error) {
         
     }
