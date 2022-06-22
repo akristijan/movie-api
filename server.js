@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const {MongoClient, ObjectId} = require('mongodb')
+const { urlencoded } = require('express')
 require('dotenv').config()
 
 let db,
@@ -21,8 +22,37 @@ MongoClient.connect(dbConnectionString)
 
 
 //Middleware
-
+app.use(cors())
+app.use(express.urlencoded({extended: true}))
+app.use(express.json())
 
 //Routes
+app.get('/search', async (req, res) => {
+    try {
+        let result = await collection.aggregate([
+            {
+                "$Search" : {
+                    "autocomplete" : {
+                        "query" : `${req.query.query}`,
+                        "path" : "title",
+                        "fuzzy" : {
+                            "maxEdits" : 2,
+                            "prefixLength" : 3
+                        }
+                    }
+                }
+            }
+        ]).toArray()
+        res.send(result)
+    } catch (error) {
+       res.status(500).send({message : error.message})
+    }
+})
 
-
+app.get('/get/:id', async (req, res) => {
+    try {
+        
+    } catch (error) {
+        
+    }
+})
